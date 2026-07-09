@@ -112,7 +112,7 @@ export default function CandidateDetailPage() {
           </select>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="label text-slate block mb-1">Name</label>
             <input
@@ -133,7 +133,7 @@ export default function CandidateDetailPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="label text-slate block mb-1">School</label>
             <input
@@ -156,7 +156,7 @@ export default function CandidateDetailPage() {
 
         <div>
           <label className="label text-slate block mb-2">Events Attended</label>
-          <div className="grid grid-cols-2 gap-y-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2">
             {EVENTS.map((ev) => (
               <label key={ev} className={checkboxRow}>
                 <input
@@ -172,7 +172,7 @@ export default function CandidateDetailPage() {
 
         <div>
           <label className="label text-slate block mb-2">Papers Completed</label>
-          <div className="grid grid-cols-2 gap-y-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2">
             <label className={checkboxRow}>
               <input
                 type="checkbox"
@@ -208,7 +208,7 @@ export default function CandidateDetailPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-y-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2">
           <label className={checkboxRow}>
             <input
               type="checkbox"
