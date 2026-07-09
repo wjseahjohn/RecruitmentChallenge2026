@@ -37,12 +37,12 @@ export default function Leaderboard({ candidates }: { candidates: Candidate[] })
       <div>
         <p className="label text-slate mb-4">Ranked by candidates in pipeline</p>
         <div className="grid grid-cols-3 gap-4 items-end">
-          {podiumOrder.map((idx) => {
+          {podiumOrder.map((idx, position) => {
             const entry = podium[idx];
             if (!entry) return <div key={idx} />;
             const place = idx + 1;
             const heights = ["h-40", "h-52", "h-32"];
-            const heightClass = heights[idx];
+            const heightClass = heights[position];
             return (
               <div key={entry.leader} className="flex flex-col items-center">
                 <p className="hero-title text-2xl mb-1">{entry.leader}</p>
