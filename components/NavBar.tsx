@@ -16,7 +16,7 @@ export default function NavBar() {
     <header className="bg-ink text-cream">
       <div className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
         <div>
-          <p className="label text-gold">AAG Division</p>
+          <p className="label text-gold">John Seah Division</p>
           <h1 className="hero-title text-3xl font-semibold tracking-wide">
             TRC <span className="text-gold">/</span> The Recruitment Challenge
           </h1>
