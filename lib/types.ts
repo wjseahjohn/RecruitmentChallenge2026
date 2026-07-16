@@ -32,3 +32,12 @@ export function computeProgress(c: Candidate): number {
   const done = stages.filter(Boolean).length;
   return Math.round((done / stages.length) * 100);
 }
+
+export interface Departure {
+  id: string;
+  name: string;
+  leader: string;
+  date_left: string;
+  reason: string | null;
+  created_at: string;
+}

@@ -10,6 +10,8 @@ export default function NavBar() {
     { href: "/", label: "Leaderboard" },
     { href: "/candidates", label: "All Candidates" },
     { href: "/candidates/new", label: "+ New Candidate" },
+    { href: "/departures", label: "Attrition" },
+    { href: "/departures/new", label: "+ Log Departure" },
   ];
 
   return (
