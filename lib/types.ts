@@ -33,6 +33,23 @@ export function computeProgress(c: Candidate): number {
   return Math.round((done / stages.length) * 100);
 }
 
+// Fraction from 0 to 1 of how far a candidate has progressed through the
+// pipeline. Used both to give leaders partial credit for candidates who
+// aren't RNF yet, and to shade the stage bar as progress deepens.
+export function progressFraction(c: Candidate): number {
+  const stages = [
+    true,
+    c.paper_m9,
+    c.paper_m9a,
+    c.paper_res5,
+    c.paper_hi,
+    c.foundation_training,
+    c.rnf,
+  ];
+  const done = stages.filter(Boolean).length;
+  return done / stages.length;
+}
+
 export interface Departure {
   id: string;
   name: string;

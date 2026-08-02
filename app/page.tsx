@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Candidate, Departure } from "@/lib/types";
+import { Candidate, Departure, progressFraction } from "@/lib/types";
 import Leaderboard from "@/components/Leaderboard";
 
 export default function DashboardPage() {
@@ -30,7 +30,10 @@ export default function DashboardPage() {
   const totalInPipeline = candidates.length;
   const totalRnf = candidates.filter((c) => c.rnf).length;
   const totalDepartures = departures.length;
-  const netGrowth = totalRnf - totalDepartures;
+  const progressScore =
+    candidates.reduce((sum, c) => sum + progressFraction(c), 0) - totalDepartures;
+  const progressScoreDisplay =
+    (progressScore >= 0 ? "+" : "") + (Math.round(progressScore * 10) / 10).toFixed(1);
 
   return (
     <div className="pt-10">
@@ -48,10 +51,8 @@ export default function DashboardPage() {
           <p className="hero-title text-4xl mt-1 text-red-500">{totalDepartures}</p>
         </div>
         <div className="bg-white border border-ink/10 rounded-sm px-5 py-4">
-          <p className="label text-slate">Net Growth</p>
-          <p className="hero-title text-4xl mt-1 text-gold">
-            {netGrowth >= 0 ? "+" + netGrowth : netGrowth}
-          </p>
+          <p className="label text-slate">Progress Score</p>
+          <p className="hero-title text-4xl mt-1 text-gold">{progressScoreDisplay}</p>
         </div>
       </div>
 

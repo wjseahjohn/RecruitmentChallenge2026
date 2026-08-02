@@ -1,12 +1,13 @@
 import { LEADERS } from "@/lib/constants";
-import { Candidate, Departure } from "@/lib/types";
+import { Candidate, Departure, progressFraction } from "@/lib/types";
 
 interface LeaderStats {
   leader: string;
   total: number;
   rnf: number;
   departures: number;
-  net: number;
+  progressPoints: number; // sum of each candidate's progress fraction (0-1)
+  netScore: number; // progressPoints minus departures
 }
 
 function buildStats(candidates: Candidate[], departures: Departure[]): LeaderStats[] {
@@ -15,7 +16,8 @@ function buildStats(candidates: Candidate[], departures: Departure[]): LeaderSta
     total: 0,
     rnf: 0,
     departures: 0,
-    net: 0,
+    progressPoints: 0,
+    netScore: 0,
   }));
 
   for (const c of candidates) {
@@ -23,6 +25,7 @@ function buildStats(candidates: Candidate[], departures: Departure[]): LeaderSta
     if (!row) continue;
     row.total += 1;
     if (c.rnf) row.rnf += 1;
+    row.progressPoints += progressFraction(c);
   }
 
   for (const d of departures) {
@@ -32,10 +35,15 @@ function buildStats(candidates: Candidate[], departures: Departure[]): LeaderSta
   }
 
   for (const row of stats) {
-    row.net = row.rnf - row.departures;
+    row.netScore = row.progressPoints - row.departures;
   }
 
   return stats;
+}
+
+function formatScore(n: number): string {
+  const rounded = Math.round(n * 10) / 10;
+  return rounded >= 0 ? "+" + rounded.toFixed(1) : rounded.toFixed(1);
 }
 
 export default function Leaderboard({
@@ -46,7 +54,7 @@ export default function Leaderboard({
   departures: Departure[];
 }) {
   const stats = buildStats(candidates, departures);
-  const byNet = [...stats].sort((a, b) => b.net - a.net || b.rnf - a.rnf);
+  const byNet = [...stats].sort((a, b) => b.netScore - a.netScore || b.rnf - a.rnf);
   const podium = byNet.slice(0, 3);
   const rest = byNet.slice(3);
 
@@ -55,7 +63,9 @@ export default function Leaderboard({
   return (
     <div className="space-y-10">
       <div>
-        <p className="label text-slate mb-4">Ranked by net growth (RNF minus attrition)</p>
+        <p className="label text-slate mb-4">
+          Ranked by pipeline progress (partial credit for candidates in progress) minus attrition
+        </p>
         <div className="grid grid-cols-3 gap-4 items-end">
           {podiumOrder.map((idx, position) => {
             const entry = podium[idx];
@@ -67,8 +77,8 @@ export default function Leaderboard({
               <div key={entry.leader} className="flex flex-col items-center">
                 <p className="hero-title text-2xl mb-1">{entry.leader}</p>
                 <p className="label text-slate mb-2 text-center">
-                  Net {entry.net >= 0 ? "+" + entry.net : entry.net} &middot; {entry.rnf} RNF
-                  &middot; {entry.departures} left
+                  Score {formatScore(entry.netScore)} &middot; {entry.rnf} RNF &middot;{" "}
+                  {entry.departures} left
                 </p>
                 <div
                   className={
@@ -87,7 +97,7 @@ export default function Leaderboard({
       <div>
         <p className="label text-slate mb-3">Full standings</p>
         <div className="overflow-x-auto">
-          <table className="w-full text-left min-w-[560px]">
+          <table className="w-full text-left min-w-[640px]">
             <thead>
               <tr className="label text-slate border-b border-ink/10">
                 <th className="py-2 font-normal">Rank</th>
@@ -95,7 +105,7 @@ export default function Leaderboard({
                 <th className="py-2 font-normal">In Pipeline</th>
                 <th className="py-2 font-normal">RNF</th>
                 <th className="py-2 font-normal">Attrition</th>
-                <th className="py-2 font-normal">Net Growth</th>
+                <th className="py-2 font-normal">Progress Score</th>
               </tr>
             </thead>
             <tbody>
@@ -108,14 +118,16 @@ export default function Leaderboard({
                   <td className="py-2 font-mono text-red-500">
                     {s.departures > 0 ? "-" + s.departures : "0"}
                   </td>
-                  <td className="py-2 font-mono font-semibold">
-                    {s.net >= 0 ? "+" + s.net : s.net}
-                  </td>
+                  <td className="py-2 font-mono font-semibold">{formatScore(s.netScore)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+        <p className="label text-slate mt-3 text-[0.6rem] normal-case tracking-normal">
+          Progress Score = sum of each candidate&rsquo;s pipeline completion (0 to 1, where a
+          fully RNF&rsquo;d candidate counts as 1.0) minus associates lost to attrition.
+        </p>
       </div>
     </div>
   );

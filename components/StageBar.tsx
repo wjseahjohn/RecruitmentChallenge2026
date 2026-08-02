@@ -1,4 +1,4 @@
-import { Candidate } from "@/lib/types";
+import { Candidate, progressFraction } from "@/lib/types";
 import { stageLabel } from "@/lib/constants";
 
 export default function StageBar({ candidate }: { candidate: Candidate }) {
@@ -12,17 +12,32 @@ export default function StageBar({ candidate }: { candidate: Candidate }) {
     { key: "rnf", done: candidate.rnf },
   ];
 
+  const fraction = progressFraction(candidate);
+  // As a candidate progresses further, completed segments get visually
+  // richer (more opaque gold) rather than jumping straight from grey to
+  // full color. RNF is the one milestone that switches to green.
+  const goldOpacity = 0.35 + fraction * 0.65;
+
   return (
     <div className="flex flex-col gap-1">
       <div className="flex gap-[2px] w-full h-2.5">
         {segments.map((s, i) => {
-          const base = "flex-1 rounded-sm";
-          const color = s.done
-            ? candidate.rnf
-              ? " bg-good"
-              : " bg-gold"
-            : " bg-stagegrey";
-          return <div key={i} className={base + color} title={stageLabel(s.key)} />;
+          if (!s.done) {
+            return <div key={i} className="flex-1 rounded-sm bg-stagegrey" title={stageLabel(s.key)} />;
+          }
+          if (candidate.rnf) {
+            return (
+              <div key={i} className="flex-1 rounded-sm bg-good" title={stageLabel(s.key)} />
+            );
+          }
+          return (
+            <div
+              key={i}
+              className="flex-1 rounded-sm bg-gold"
+              style={{ opacity: goldOpacity }}
+              title={stageLabel(s.key)}
+            />
+          );
         })}
       </div>
       <p className="label text-[0.6rem] text-slate">
